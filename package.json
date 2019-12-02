@@ -8,7 +8,7 @@
 	"main": "./dist/electron/main.js",
 	"scripts": {
 		"prebuild": "npm run pkg && npm run build:clean",
-		"build": "node .electron-vue/build.js && electron-builder",
+		"build": "node --max-old-space-size=8192 .electron-vue/build.js && electron-builder",
 		"postbuild": "npm run upload",
 		"upload": "node ./.electron-vue/upload.js all",
 		"upload:info": "node ./.electron-vue/upload.js",
