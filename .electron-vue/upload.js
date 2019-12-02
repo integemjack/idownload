@@ -20,29 +20,45 @@ const upload = (from, to) => {
 
 (async () => {
 	try {
-		let file =
-			os.platform() === "win32"
-				? `iDownloader Setup ${package.version}.exe`
-				: `iDownloader-${package.version}.dmg`;
-		let zipFile =
-			os.platform() === "win32" ? `iDownloader ${package.version}.zip` : `iDownloader-${package.version}-mac.zip`;
+		let file, zipFile;
+		switch (os.platform()) {
+			case "darwin":
+				file = `${package.build.productName}-${package.version}.dmg`;
+				zipFile = `${package.build.productName}-${package.version}-mac.zip`;
+				break;
 
-		if (os.platform() === "win32") {
-			consola.info(`Starting zip win files...`);
-			await zip(path.join(process.cwd(), "build/win-unpacked"), path.join(process.cwd(), `build/${zipFile}`));
+			case "win32":
+				file = `${package.build.productName} Setup ${package.version}.exe`;
+				zipFile = `${package.build.productName} ${package.version}.zip`;
+				consola.info(`Starting zip win files...`);
+				await zip(path.join(process.cwd(), "build/win-unpacked"), path.join(process.cwd(), `build/${zipFile}`));
+				break;
+
+			default:
+				file = `${package.name}_${package.version}_amd64.deb`;
+				zipFile = `${package.build.productName} ${package.version}.zip`;
+				consola.info(`Starting zip linux files...`);
+				await zip(path.join(process.cwd(), "build/win-unpacked"), path.join(process.cwd(), `build/${zipFile}`));
+				break;
 		}
+		// let file = os.platform() === "win32" ? `iPic Setup ${package.version}.exe` : `iPic-${package.version}.dmg`;
+		// let zipFile = os.platform() === "win32" ? `iPic ${package.version}.zip` : `iPic-${package.version}-mac.zip`;
+		// if (os.platform() === "win32") {
+		//   consola.info(`Starting zip win files...`);
+		//   await zip(path.join(process.cwd(), "build/win-unpacked"), path.join(process.cwd(), `build/${zipFile}`));
+		// }
 		if (process.argv[2] || process.argv[2] === "all") {
 			await upload(
 				path.join(process.cwd(), `build/${file}`),
-				"root:cc880108@player.integem.com:/home/DATA/tools/download/iDownloader/"
+				`root:cc880108@player.integem.com:/home/DATA/tools/download/${package.build.productName}/`
 			);
 			await upload(
 				path.join(process.cwd(), `build/${zipFile}`),
-				"root:cc880108@player.integem.com:/home/DATA/tools/download/iDownloader/"
+				`root:cc880108@player.integem.com:/home/DATA/tools/download/${package.build.productName}/`
 			);
 		}
 		await upload(
-			"root:cc880108@player.integem.com:/home/DATA/tools/download/iDownloader/info.yml",
+			`root:cc880108@player.integem.com:/home/DATA/tools/download/${package.build.productName}/info.yml`,
 			path.join(process.cwd(), `build/info.yml`)
 		);
 		let info = yaml.safeLoad(fs.readFileSync(path.join(process.cwd(), `build/info.yml`), "utf8"));
@@ -57,13 +73,18 @@ const upload = (from, to) => {
 				info.download.darwin = file;
 				info.download.darwin_zip = zipFile;
 				break;
+
+			default:
+				info.download.linux = file;
+				info.download.linux_zip = zipFile;
+				break;
 		}
 		consola.info(yaml.safeDump(info));
 		fs.writeFileSync(path.join(process.cwd(), `build/info.yml`), yaml.safeDump(info));
 		consola.ready(`Process info.yml is OK!`);
 		await upload(
 			path.join(process.cwd(), `build/info.yml`),
-			"root:cc880108@player.integem.com:/home/DATA/tools/download/iDownloader/info.yml"
+			`root:cc880108@player.integem.com:/home/DATA/tools/download/${package.build.productName}/info.yml`
 		);
 	} catch (e) {
 		consola.error(e);
