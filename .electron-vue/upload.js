@@ -34,14 +34,14 @@ const upload = (from, to) => {
 
 			case "win32":
 				file = `${package.build.productName} Setup ${package.version}.exe`;
-				zipFile = `${package.build.productName} win ${package.version}.zip`;
+				zipFile = `${package.build.productName}_win_${package.version}.zip`;
 				consola.info(`Starting zip win files...`);
 				await zip(path.join(process.cwd(), "build/win-unpacked"), path.join(process.cwd(), `build/${zipFile}`));
 				break;
 
 			default:
 				file = `${package.name}_${package.version}_amd64.deb`;
-				zipFile = `${package.build.productName} linux ${package.version}.zip`;
+				zipFile = `${package.build.productName}_linux_${package.version}.zip`;
 				consola.info(`Starting zip linux files...`);
 				await zip(
 					path.join(process.cwd(), "build/linux-unpacked"),
