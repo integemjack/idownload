@@ -24,7 +24,7 @@
 		"test": "npm run unit && npm run e2e",
 		"unit": "karma start test/unit/karma.conf.js",
 		"postinstall": "",
-		"pkg": "node ./.electron-vue/dir.js && pkg . -t node10 -d --out-dir ./command/",
+		"pkg": "node ./.electron-vue/dir.js && pkg . -t node10 --out-dir ./command/",
 		"command": "node ./getLink/index.js https://www.youtube.com/watch?v=DyDfgMOUjCI",
 		"precommit": "lint-staged"
 	},
