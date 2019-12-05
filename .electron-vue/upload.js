@@ -11,9 +11,14 @@ const upload = (from, to) => {
 	return new Promise((resolve, reject) => {
 		consola.info(`Starting upload ${from} to ${to} ...`);
 		client.scp(from, to, function(err) {
-			if (err) return reject(err);
-			consola.ready(`Upload ${from} to ${to} is OK!`);
-			resolve();
+			if (err) {
+				// return reject(err);
+				console.log(err);
+				return upload(from, to);
+			} else {
+				consola.ready(`Upload ${from} to ${to} is OK!`);
+				resolve();
+			}
 		});
 	});
 };

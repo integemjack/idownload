@@ -1,6 +1,6 @@
 {
 	"name": "idownloader",
-	"version": "1.0.126",
+	"version": "1.0.127",
 	"author": "Jack Wang <jack.wang@integem.com>",
 	"description": "youtube download tool",
 	"license": "MIT",
@@ -41,12 +41,10 @@
 	"build": {
 		"productName": "iDownloader",
 		"appId": "com.integem.tool.download",
-		"publish": [
-			{
-				"provider": "generic",
-				"url": "https://server.integem.com/tool/"
-			}
-		],
+		"publish": [{
+			"provider": "generic",
+			"url": "https://server.integem.com/tool/"
+		}],
 		"directories": {
 			"output": "build"
 		},
@@ -61,8 +59,7 @@
 			"node_modules/lodash/**/*"
 		],
 		"dmg": {
-			"contents": [
-				{
+			"contents": [{
 					"x": 410,
 					"y": 150,
 					"type": "link",
