@@ -34,16 +34,19 @@ const upload = (from, to) => {
 
 			case "win32":
 				file = `${package.build.productName} Setup ${package.version}.exe`;
-				zipFile = `${package.build.productName} ${package.version}.zip`;
+				zipFile = `${package.build.productName} win ${package.version}.zip`;
 				consola.info(`Starting zip win files...`);
 				await zip(path.join(process.cwd(), "build/win-unpacked"), path.join(process.cwd(), `build/${zipFile}`));
 				break;
 
 			default:
 				file = `${package.name}_${package.version}_amd64.deb`;
-				zipFile = `${package.build.productName} ${package.version}.zip`;
+				zipFile = `${package.build.productName} linux ${package.version}.zip`;
 				consola.info(`Starting zip linux files...`);
-				await zip(path.join(process.cwd(), "build/win-unpacked"), path.join(process.cwd(), `build/${zipFile}`));
+				await zip(
+					path.join(process.cwd(), "build/linux-unpacked"),
+					path.join(process.cwd(), `build/${zipFile}`)
+				);
 				break;
 		}
 		// let file = os.platform() === "win32" ? `iPic Setup ${package.version}.exe` : `iPic-${package.version}.dmg`;
