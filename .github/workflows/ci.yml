@@ -1,0 +1,44 @@
+name: CI
+
+on: [push]
+
+jobs:
+  release:
+    runs-on: macOS-latest
+
+     strategy:
+       matrix:
+         node: [12, 13]
+         os: [macOS-latest, ubuntu-latest, windows-latest]
+
+    steps:
+      - name: install
+        uses: actions/checkout@master
+        with:
+          node-version: "latest"
+
+      - name: build
+        run: |
+          npm i
+          npm run build
+
+      - name: upload macos
+        uses: actions/upload-artifact@master
+        if: startsWith(matrix.os, "macOS-latest")
+        with:
+          name: ${{matrix.node}}-${{matrix.os}}
+          path: ./build/mac
+
+      - name: upload ubuntu
+        uses: actions/upload-artifact@master
+        if: startsWith(matrix.os, "ubuntu-latest")
+        with:
+          name: ${{matrix.node}}-${{matrix.os}}
+          path: ./build/linux-unpacked
+
+      - name: upload windows
+        uses: actions/upload-artifact@master
+        if: startsWith(matrix.os, "windows-latest")
+        with:
+          name: ${{matrix.node}}-${{matrix.os}}
+          path: ./build/win-unpacked
