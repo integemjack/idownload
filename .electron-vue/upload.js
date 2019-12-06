@@ -29,7 +29,8 @@ const upload = (from, to) => {
 		switch (os.platform()) {
 			case "darwin":
 				file = `${package.build.productName}-${package.version}.dmg`;
-				zipFile = `${package.build.productName}-${package.version}-mac.zip`;
+				zipFile = `${package.build.productName}_mac_${package.version}.zip`;
+				await zip(path.join(process.cwd(), "build/mac"), path.join(process.cwd(), `build/${zipFile}`));
 				break;
 
 			case "win32":
