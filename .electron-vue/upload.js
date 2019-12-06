@@ -7,14 +7,19 @@ const consola = require("consola");
 const yaml = require("js-yaml");
 const zip = require("./libs/zip");
 
-const upload = (from, to) => {
+const upload = (from, to, always=true) => {
 	return new Promise((resolve, reject) => {
 		consola.info(`Starting upload ${from} to ${to} ...`);
 		client.scp(from, to, function(err) {
 			if (err) {
 				// return reject(err);
-				console.log(err);
-				return upload(from, to);
+				if(always) {
+					console.log(err);
+					return upload(from, to);
+				} else {
+					consola.ready(`Upload ${from} to ${to} is Failed!`);
+					resolve();
+				}
 			} else {
 				consola.ready(`Upload ${from} to ${to} is OK!`);
 				resolve();
@@ -56,21 +61,24 @@ const upload = (from, to) => {
 		//   consola.info(`Starting zip win files...`);
 		//   await zip(path.join(process.cwd(), "build/win-unpacked"), path.join(process.cwd(), `build/${zipFile}`));
 		// }
-		if (process.argv[2] || process.argv[2] === "all") {
-			if(fs.existsSync(path.join(process.cwd(), `build/${file}`))) await upload(
-				path.join(process.cwd(), `build/${file}`),
-				`root:cc880108@player.integem.com:/home/DATA/tools/download/${package.build.productName}/`
-			);
-			if(fs.existsSync(path.join(process.cwd(), `build/${zipFile}`))) await upload(
-				path.join(process.cwd(), `build/${zipFile}`),
-				`root:cc880108@player.integem.com:/home/DATA/tools/download/${package.build.productName}/`
-			);
-		}
 		await upload(
 			`root:cc880108@player.integem.com:/home/DATA/tools/download/${package.build.productName}/info.yml`,
 			path.join(process.cwd(), `build/info.yml`)
 		);
+
 		let info = yaml.safeLoad(fs.readFileSync(path.join(process.cwd(), `build/info.yml`), "utf8"));
+
+		if (process.argv[2] || process.argv[2] === "all") {
+			if(fs.existsSync(path.join(process.cwd(), `build/${file}`)) && info.download[`${os.platform()}`] !== file) await upload(
+				path.join(process.cwd(), `build/${file}`),
+				`root:cc880108@player.integem.com:/home/DATA/tools/download/${package.build.productName}/`
+			);
+			if(fs.existsSync(path.join(process.cwd(), `build/${zipFile}`)) && info.download[`${os.platform()}_zip`] !== zipFile) await upload(
+				path.join(process.cwd(), `build/${zipFile}`),
+				`root:cc880108@player.integem.com:/home/DATA/tools/download/${package.build.productName}/`
+			);
+		}
+
 		consola.ready(`Starting process info.yml ...`);
 		switch (os.platform()) {
 			case "win32":
