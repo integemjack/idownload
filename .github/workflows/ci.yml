@@ -8,19 +8,20 @@ jobs:
 
     strategy:
       matrix:
-        node: [12, 13]
+        node: [12]
         os: [macOS-latest, ubuntu-latest, windows-latest]
 
     steps:
-      - name: install
+      - name: init
         uses: actions/checkout@master
         with:
           node-version: "latest"
 
+      - name: install
+        run: npm i
+
       - name: build
-        run: |
-          npm i
-          npm run build
+        run: npm run build
 
       - name: upload macos
         uses: actions/upload-artifact@master
@@ -42,3 +43,6 @@ jobs:
         with:
           name: ${{matrix.node}}-${{matrix.os}}
           path: ./build/win-unpacked
+
+      - name: deploy
+        run: npm run upload
