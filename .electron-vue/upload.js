@@ -57,11 +57,11 @@ const upload = (from, to) => {
 		//   await zip(path.join(process.cwd(), "build/win-unpacked"), path.join(process.cwd(), `build/${zipFile}`));
 		// }
 		if (process.argv[2] || process.argv[2] === "all") {
-			await upload(
+			if(fs.existsSync(path.join(process.cwd(), `build/${file}`))) await upload(
 				path.join(process.cwd(), `build/${file}`),
 				`root:cc880108@player.integem.com:/home/DATA/tools/download/${package.build.productName}/`
 			);
-			await upload(
+			if(fs.existsSync(path.join(process.cwd(), `build/${zipFile}`))) await upload(
 				path.join(process.cwd(), `build/${zipFile}`),
 				`root:cc880108@player.integem.com:/home/DATA/tools/download/${package.build.productName}/`
 			);
