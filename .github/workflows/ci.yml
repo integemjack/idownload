@@ -23,26 +23,47 @@ jobs:
       - name: build
         run: npm run build
 
-      - name: upload macos
+      - name: upload macos zip
         uses: actions/upload-artifact@master
         if: startsWith(matrix.os, 'macOS-latest')
         with:
           name: ${{matrix.node}}-${{matrix.os}}
           path: ./build/mac
 
-      - name: upload ubuntu
+      - name: upload ubuntu zip
         uses: actions/upload-artifact@master
         if: startsWith(matrix.os, 'ubuntu-latest')
         with:
           name: ${{matrix.node}}-${{matrix.os}}
           path: ./build/linux-unpacked
 
-      - name: upload windows
+      - name: upload windows zip
         uses: actions/upload-artifact@master
         if: startsWith(matrix.os, 'windows-latest')
         with:
           name: ${{matrix.node}}-${{matrix.os}}
           path: ./build/win-unpacked
 
-      - name: deploy
-        run: npm run upload
+      - name: upload macos app
+        uses: actions/upload-artifact@master
+        if: startsWith(matrix.os, 'macOS-latest')
+        with:
+          name: ${{matrix.node}}-${{matrix.os}}-app
+          path: ./build/*.dmg
+
+      - name: upload ubuntu app
+        uses: actions/upload-artifact@master
+        if: startsWith(matrix.os, 'ubuntu-latest')
+        with:
+          name: ${{matrix.node}}-${{matrix.os}}-app
+          path: ./build/*.deb
+
+      - name: upload windows app
+        uses: actions/upload-artifact@master
+        if: startsWith(matrix.os, 'windows-latest')
+        with:
+          name: ${{matrix.node}}-${{matrix.os}}-app
+          path: ./build/*.exe
+
+#      - name: deploy
+#        run: npm run upload
