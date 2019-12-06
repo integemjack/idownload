@@ -3,7 +3,8 @@ name: CI
 on: [push]
 
 jobs:
-  build&upload:
+  build4upload:
+
     runs-on: ${{matrix.os}}
 
     strategy:
