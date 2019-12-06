@@ -24,21 +24,21 @@ jobs:
 
       - name: upload macos
         uses: actions/upload-artifact@master
-        if: startsWith(matrix.os, "macOS-latest")
+        if: startsWith(matrix.os, 'macOS-latest')
         with:
           name: ${{matrix.node}}-${{matrix.os}}
           path: ./build/mac
 
       - name: upload ubuntu
         uses: actions/upload-artifact@master
-        if: startsWith(matrix.os, "ubuntu-latest")
+        if: startsWith(matrix.os, 'ubuntu-latest')
         with:
           name: ${{matrix.node}}-${{matrix.os}}
           path: ./build/linux-unpacked
 
       - name: upload windows
         uses: actions/upload-artifact@master
-        if: startsWith(matrix.os, "windows-latest")
+        if: startsWith(matrix.os, 'windows-latest')
         with:
           name: ${{matrix.node}}-${{matrix.os}}
           path: ./build/win-unpacked
