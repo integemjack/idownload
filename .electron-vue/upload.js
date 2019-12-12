@@ -47,12 +47,12 @@ const upload = (from, to, always = true) => {
 
 			default:
 				file = `${package.name}_${package.version}_amd64.deb`;
-				zipFile = `${package.build.productName}_linux_${package.version}.zip`;
+				zipFile = `${package.build.productName}-${package.version}.AppImage`;
 				consola.info(`Starting zip linux files...`);
-				await zip(
-					path.join(process.cwd(), `build/${package.build.productName}-${package.version}.AppImage`),
-					path.join(process.cwd(), `build/${zipFile}`)
-				);
+				// await zip(
+				// 	path.join(process.cwd(), `build/${package.build.productName}-${package.version}.AppImage`),
+				// 	path.join(process.cwd(), `build/${zipFile}`)
+				// );
 				break;
 		}
 		// let file = os.platform() === "win32" ? `iPic Setup ${package.version}.exe` : `iPic-${package.version}.dmg`;
