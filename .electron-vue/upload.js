@@ -30,7 +30,7 @@ const upload = (from, to, always = true) => {
 
 (async () => {
 	try {
-		let file, zipFile, appimage;
+		let file, zipFile;
 		switch (os.platform()) {
 			case "darwin":
 				file = `${package.build.productName}-${package.version}.dmg`;
@@ -48,10 +48,9 @@ const upload = (from, to, always = true) => {
 			default:
 				file = `${package.name}_${package.version}_amd64.deb`;
 				zipFile = `${package.build.productName}_linux_${package.version}.zip`;
-				appimage = `${package.name}_${package.version}_amd64.appImage`;
 				consola.info(`Starting zip linux files...`);
 				await zip(
-					path.join(process.cwd(), "build/linux-unpacked"),
+					path.join(process.cwd(), `build/${package.build.productName}-${package.version}.AppImage`),
 					path.join(process.cwd(), `build/${zipFile}`)
 				);
 				break;
@@ -83,11 +82,6 @@ const upload = (from, to, always = true) => {
 					path.join(process.cwd(), `build/${zipFile}`),
 					`root:cc880108@player.integem.com:/home/DATA/tools/download/${package.build.productName}/`
 				);
-			if (fs.existsSync(path.join(process.cwd(), `build/${appimage}`)) && info.download.appimage !== appimage)
-				await upload(
-					path.join(process.cwd(), `build/${appimage}`),
-					`root:cc880108@player.integem.com:/home/DATA/tools/download/${package.build.productName}/`
-				);
 		}
 
 		consola.ready(`Starting process info.yml ...`);
@@ -105,7 +99,6 @@ const upload = (from, to, always = true) => {
 			default:
 				info.download.linux = file;
 				info.download.linux_zip = zipFile;
-				info.download.appimage = appimage;
 				break;
 		}
 		consola.info(yaml.safeDump(info));
