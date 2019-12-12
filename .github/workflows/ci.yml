@@ -3,47 +3,50 @@ name: CI
 on: [push]
 
 jobs:
-  build4upload:
+    build4upload:
+        runs-on: ${{matrix.os}}
 
-    runs-on: ${{matrix.os}}
+        strategy:
+            matrix:
+                node: [12]
+                os: [macOS-latest, ubuntu-latest, windows-latest]
 
-    strategy:
-      matrix:
-        node: [12]
-        os: [macOS-latest, ubuntu-latest, windows-latest]
+        steps:
+            - name: init
+              uses: actions/checkout@master
+              with:
+                  node-version: "latest"
 
-    steps:
-      - name: init
-        uses: actions/checkout@master
-        with:
-          node-version: "latest"
+            - name: install
+              run: npm i
 
-      - name: install
-        run: npm i
+            - name: install electron-builder with macos latest
+              if: startsWith(matrix.os, 'macOS')
+              run: npm i electron-builder@21.2.0
 
-      - name: build
-        run: npm run build
+            - name: build
+              run: npm run build
 
-      - name: upload macos
-        uses: actions/upload-artifact@master
-        if: startsWith(matrix.os, 'macOS-latest')
-        with:
-          name: ${{matrix.node}}-${{matrix.os}}
-          path: ./build/mac
+            #      - name: upload macos
+            #        uses: actions/upload-artifact@master
+            #        if: startsWith(matrix.os, 'macOS')
+            #        with:
+            #          name: ${{matrix.node}}-${{matrix.os}}
+            #          path: ./build/mac
+            #
+            #      - name: upload ubuntu
+            #        uses: actions/upload-artifact@master
+            #        if: startsWith(matrix.os, 'ubuntu')
+            #        with:
+            #          name: ${{matrix.node}}-${{matrix.os}}
+            #          path: ./build/linux-unpacked
+            #
+            #      - name: upload windows
+            #        uses: actions/upload-artifact@master
+            #        if: startsWith(matrix.os, 'windows')
+            #        with:
+            #          name: ${{matrix.node}}-${{matrix.os}}
+            #          path: ./build/win-unpacked
 
-      - name: upload ubuntu
-        uses: actions/upload-artifact@master
-        if: startsWith(matrix.os, 'ubuntu-latest')
-        with:
-          name: ${{matrix.node}}-${{matrix.os}}
-          path: ./build/linux-unpacked
-
-      - name: upload windows
-        uses: actions/upload-artifact@master
-        if: startsWith(matrix.os, 'windows-latest')
-        with:
-          name: ${{matrix.node}}-${{matrix.os}}
-          path: ./build/win-unpacked
-
-      - name: deploy
-        run: npm run upload
+            - name: deploy
+              run: npm run upload

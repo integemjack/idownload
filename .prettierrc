@@ -34,6 +34,12 @@
             "options": {
                 "parser": "typescript"
             }
+        },
+        {
+            "files": "*.yml",
+            "options": {
+                "parser": "yaml"
+            }
         }
     ]
 }
