@@ -38,7 +38,8 @@
         {
             "files": "*.yml",
             "options": {
-                "parser": "yaml"
+                "parser": "yaml",
+                "tabWidth": 2
             }
         }
     ]
