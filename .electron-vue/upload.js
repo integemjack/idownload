@@ -7,13 +7,13 @@ const consola = require("consola");
 const yaml = require("js-yaml");
 const zip = require("./libs/zip");
 
-const upload = (from, to, always=true) => {
+const upload = (from, to, always = true) => {
 	return new Promise((resolve, reject) => {
 		consola.info(`Starting upload ${from} to ${to} ...`);
 		client.scp(from, to, function(err) {
 			if (err) {
 				// return reject(err);
-				if(always) {
+				if (always) {
 					console.log(err);
 					return upload(from, to);
 				} else {
@@ -30,7 +30,7 @@ const upload = (from, to, always=true) => {
 
 (async () => {
 	try {
-		let file, zipFile;
+		let file, zipFile, appimage;
 		switch (os.platform()) {
 			case "darwin":
 				file = `${package.build.productName}-${package.version}.dmg`;
@@ -48,6 +48,7 @@ const upload = (from, to, always=true) => {
 			default:
 				file = `${package.name}_${package.version}_amd64.deb`;
 				zipFile = `${package.build.productName}_linux_${package.version}.zip`;
+				appimage = `${package.name}_${package.version}_amd64.appImage`;
 				consola.info(`Starting zip linux files...`);
 				await zip(
 					path.join(process.cwd(), "build/linux-unpacked"),
@@ -69,14 +70,24 @@ const upload = (from, to, always=true) => {
 		let info = yaml.safeLoad(fs.readFileSync(path.join(process.cwd(), `build/info.yml`), "utf8"));
 
 		if (process.argv[2] || process.argv[2] === "all") {
-			if(fs.existsSync(path.join(process.cwd(), `build/${file}`)) && info.download[`${os.platform()}`] !== file) await upload(
-				path.join(process.cwd(), `build/${file}`),
-				`root:cc880108@player.integem.com:/home/DATA/tools/download/${package.build.productName}/`
-			);
-			if(fs.existsSync(path.join(process.cwd(), `build/${zipFile}`)) && info.download[`${os.platform()}_zip`] !== zipFile) await upload(
-				path.join(process.cwd(), `build/${zipFile}`),
-				`root:cc880108@player.integem.com:/home/DATA/tools/download/${package.build.productName}/`
-			);
+			if (fs.existsSync(path.join(process.cwd(), `build/${file}`)) && info.download[`${os.platform()}`] !== file)
+				await upload(
+					path.join(process.cwd(), `build/${file}`),
+					`root:cc880108@player.integem.com:/home/DATA/tools/download/${package.build.productName}/`
+				);
+			if (
+				fs.existsSync(path.join(process.cwd(), `build/${zipFile}`)) &&
+				info.download[`${os.platform()}_zip`] !== zipFile
+			)
+				await upload(
+					path.join(process.cwd(), `build/${zipFile}`),
+					`root:cc880108@player.integem.com:/home/DATA/tools/download/${package.build.productName}/`
+				);
+			if (fs.existsSync(path.join(process.cwd(), `build/${appimage}`)) && info.download.appimage !== appimage)
+				await upload(
+					path.join(process.cwd(), `build/${appimage}`),
+					`root:cc880108@player.integem.com:/home/DATA/tools/download/${package.build.productName}/`
+				);
 		}
 
 		consola.ready(`Starting process info.yml ...`);
@@ -94,6 +105,7 @@ const upload = (from, to, always=true) => {
 			default:
 				info.download.linux = file;
 				info.download.linux_zip = zipFile;
+				info.download.appimage = appimage;
 				break;
 		}
 		consola.info(yaml.safeDump(info));

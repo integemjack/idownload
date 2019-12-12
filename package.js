@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 let package = JSON.parse(fs.readFileSync(path.join(process.cwd(), "package.json")));
 let version = package.version;

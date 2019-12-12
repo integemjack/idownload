@@ -1,6 +1,6 @@
 {
 	"name": "idownloader",
-	"version": "1.0.127",
+	"version": "1.0.128",
 	"author": "Jack Wang <jack.wang@integem.com>",
 	"description": "youtube download tool",
 	"license": "MIT",
@@ -11,7 +11,7 @@
 		"build": "node --max-old-space-size=8192 .electron-vue/build.js && electron-builder",
 		"upload": "node ./.electron-vue/upload.js all",
 		"upload:info": "node ./.electron-vue/upload.js",
-		"build:version": "node .electron-vue/package.js",
+		"version": "node package.js",
 		"build:dir": "node .electron-vue/build.js && electron-builder --dir",
 		"build:clean": "cross-env BUILD_TARGET=clean node .electron-vue/build.js",
 		"build:web": "cross-env BUILD_TARGET=web node .electron-vue/build.js",
@@ -24,11 +24,12 @@
 		"unit": "karma start test/unit/karma.conf.js",
 		"postinstall": "",
 		"pkg": "node ./.electron-vue/dir.js && pkg . -t node10 --out-dir ./command/",
-		"command": "node ./getLink/index.js https://www.youtube.com/watch?v=DyDfgMOUjCI",
-		"precommit": "lint-staged"
+		"command": "node ./getLink/index.js https://www.youtube.com/watch?v=DyDfgMOUjCI"
 	},
-	"lint-staged": {
-		"*.{vue,js,json,css,md}": ["prettier --write", "git add"]
+	"husky": {
+		"hooks": {
+			"pre-commit": "npm run version && git add package.json && pretty-quick --staged"
+		}
 	},
 	"bin": {
 		"mian": "getLink/index.js"
@@ -40,10 +41,12 @@
 	"build": {
 		"productName": "iDownloader",
 		"appId": "com.integem.tool.download",
-		"publish": [{
-			"provider": "generic",
-			"url": "https://server.integem.com/tool/"
-		}],
+		"publish": [
+			{
+				"provider": "generic",
+				"url": "https://server.integem.com/tool/"
+			}
+		],
 		"directories": {
 			"output": "build"
 		},
@@ -58,7 +61,8 @@
 			"node_modules/lodash/**/*"
 		],
 		"dmg": {
-			"contents": [{
+			"contents": [
+				{
 					"x": 410,
 					"y": 150,
 					"type": "link",
@@ -72,13 +76,15 @@
 			]
 		},
 		"mac": {
+			"target": ["dmg", "pkg", "mas"],
 			"icon": "build/icons/icon.icns"
 		},
 		"win": {
+			"target": ["nsis", "MSI", "AppX"],
 			"icon": "build/icons/icon.ico"
 		},
 		"linux": {
-			"target": "deb",
+			"target": ["deb", "rpm", "AppImage", "apk"],
 			"icon": "build/icons"
 		}
 	},
@@ -128,7 +134,7 @@
 		"extract-text-webpack-plugin": "^3.0.0",
 		"file-loader": "^0.11.2",
 		"html-webpack-plugin": "^2.30.1",
-		"husky": "^0.14.3",
+		"husky": "^3.1.0",
 		"inject-loader": "^3.0.0",
 		"karma": "^2.0.3",
 		"karma-chai": "^0.1.0",
@@ -138,12 +144,12 @@
 		"karma-sourcemap-loader": "^0.3.7",
 		"karma-spec-reporter": "^0.0.31",
 		"karma-webpack": "^2.0.13",
-		"lint-staged": "^7.1.0",
 		"mocha": "^5.2.0",
 		"multispinner": "^0.2.1",
 		"node-loader": "^0.6.0",
 		"pkg": "^4.4.0",
 		"prettier": "^1.13.7",
+		"pretty-quick": "^2.0.1",
 		"require-dir": "^0.3.0",
 		"scp": "0.0.3",
 		"scp2": "^0.5.0",
