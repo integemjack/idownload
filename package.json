@@ -1,6 +1,6 @@
 {
 	"name": "idownloader",
-	"version": "1.0.130",
+	"version": "1.0.131",
 	"author": "Jack Wang <jack.wang@integem.com>",
 	"description": "youtube download tool",
 	"license": "MIT",
@@ -76,7 +76,7 @@
 			]
 		},
 		"mac": {
-			"target": ["dmg", "pkg", "mas"],
+			"target": ["dmg", "pkg"],
 			"icon": "build/icons/icon.icns"
 		},
 		"win": {
