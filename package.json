@@ -1,6 +1,6 @@
 {
 	"name": "idownloader",
-	"version": "1.0.134",
+	"version": "1.0.135",
 	"author": "Jack Wang <jack.wang@integem.com>",
 	"description": "youtube download tool",
 	"license": "MIT",
@@ -93,6 +93,7 @@
 		"axios": "^0.16.1",
 		"bootstrap": "^4.1.1",
 		"bootstrap-vue": "^1.2.0",
+		"bufferutil": "^4.0.1",
 		"element-ui": "^2.4.3",
 		"ffmpeg-static": "^2.3.0",
 		"jquery": "^3.3.1",
@@ -101,6 +102,7 @@
 		"nightmare": "^3.0.2",
 		"progress-stream": "^2.0.0",
 		"socket.io": "^2.1.1",
+		"utf-8-validate": "^5.0.2",
 		"vue": "^2.5.16",
 		"vue-awesome": "^2.3.7",
 		"vue-electron": "^1.0.6",
