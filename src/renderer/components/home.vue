@@ -74,7 +74,9 @@
 <script>
 const fs = require("fs");
 const path = require("path");
+const os = require("os");
 const { dialog } = require("electron").remote;
+const moment = require("moment");
 import { isNumber } from "util";
 
 const clipboard = require("electron").clipboard;
@@ -115,8 +117,18 @@ export default {
 			version:
 				process.env.NODE_ENV !== "development"
 					? JSON.parse(fs.readFileSync(path.join(__dirname, "../../package.json"))).version
-					: JSON.parse(fs.readFileSync(path.join(process.cwd(), "package.json"))).version
+					: JSON.parse(fs.readFileSync(path.join(process.cwd(), "package.json"))).version,
+			project: path.join(os.tmpdir(), "iCreatorProjectPath.txt")
 		};
+	},
+	mounted() {
+		setInterval(() => {
+			let _path = "";
+			if (fs.existsSync(path.join(this.project))) {
+				_path = ` - ${fs.readFileSync(path.join(this.project), "utf-8")}`;
+			}
+			document.title = `iDownload${_path}`;
+		}, 1000);
 	},
 	methods: {
 		getUrl() {
@@ -125,6 +137,7 @@ export default {
 		videoLoadIn() {
 			this.loading = true;
 			// this.videoUrl = this.inputVideoUrl;
+			console.log(this.inputVideoUrl);
 			this.$load(this.inputVideoUrl)
 				.then(info => {
 					console.log(info);
@@ -140,7 +153,7 @@ export default {
 				.catch(err => {
 					this.loading = false;
 					this.$message.error(err.message);
-					console.error(err);
+					console.log(err);
 				});
 		},
 		async handleConfirm() {
@@ -187,42 +200,73 @@ export default {
 			video.audio = this.audio;
 			video.container = this.audio ? "mp3" : "mp4";
 
-			dialog.showSaveDialog(
-				{
-					//过滤条件
-					filters: [{ name: video.container, extensions: [video.container] }]
-				},
-				res => {
-					if (res) {
-						video.path = res;
-						this.$down(video, (err, bar) => {
-							console.log(err, bar);
+			if (!fs.existsSync(path.join(this.project))) return this.$message.error("No project config file.");
+			let project = fs.readFileSync(this.project, "utf-8");
+			console.log(project);
+
+			video.path = path.join(path.join(project), "instruction/music", `${moment().valueOf()}.wav`);
+			this.$down(video, (err, bar) => {
+				console.log(err, bar);
+				if (err) {
+					this.$message.error(err.message);
+				} else {
+					if (bar === "done") {
+						// download finish
+						this.download.name = "Process";
+						this.$ffmpeg(video, (err, stdout, stderr) => {
+							fs.unlinkSync(`${video.path}.mp4`);
+							console.log(err, stdout, stderr);
 							if (err) {
-								this.$message.error(err.message);
+								this.$message.error(err || stderr);
 							} else {
-								if (bar === "done") {
-									// download finish
-									this.download.name = "Process";
-									this.$ffmpeg(video, (err, stdout, stderr) => {
-										fs.unlinkSync(`${video.path}.mp4`);
-										console.log(err, stdout, stderr);
-										if (err) {
-											this.$message.error(err || stderr);
-										} else {
-											this.$message(`Process is OK!`);
-										}
-										this.download.bar = -1;
-										this.download.name = "Download";
-									});
-								} else {
-									this.download.bar = bar;
-									this.download.name = `${bar} %`;
-								}
+								this.$message(`Process is OK!`);
 							}
+							this.download.bar = -1;
+							this.download.name = "Download";
 						});
+					} else {
+						this.download.bar = bar;
+						this.download.name = `${bar} %`;
 					}
 				}
-			);
+			});
+
+			// dialog.showSaveDialog(
+			// 	{
+			// 		//过滤条件
+			// 		filters: [{ name: video.container, extensions: [video.container] }]
+			// 	},
+			// 	res => {
+			// 		if (res) {
+			// 			video.path = res;
+			// 			this.$down(video, (err, bar) => {
+			// 				console.log(err, bar);
+			// 				if (err) {
+			// 					this.$message.error(err.message);
+			// 				} else {
+			// 					if (bar === "done") {
+			// 						// download finish
+			// 						this.download.name = "Process";
+			// 						this.$ffmpeg(video, (err, stdout, stderr) => {
+			// 							fs.unlinkSync(`${video.path}.mp4`);
+			// 							console.log(err, stdout, stderr);
+			// 							if (err) {
+			// 								this.$message.error(err || stderr);
+			// 							} else {
+			// 								this.$message(`Process is OK!`);
+			// 							}
+			// 							this.download.bar = -1;
+			// 							this.download.name = "Download";
+			// 						});
+			// 					} else {
+			// 						this.download.bar = bar;
+			// 						this.download.name = `${bar} %`;
+			// 					}
+			// 				}
+			// 			});
+			// 		}
+			// 	}
+			// );
 		},
 		crop() {
 			if (this.maskVisible) {
