@@ -1,73 +1,99 @@
 <template>
 	<div id="app" v-loading="videoLoading">
-		<!--		<img src="./static/images/logo.png" height="100" style="user-select: none; -webkit-app-region: drag;" />-->
-		<div class="header">
-			<div class="header-left">
-				<el-input placeholder="video address" v-model="inputVideoUrl" />
-			</div>
-			<div class="header-right">
-				<el-button @click="getUrl" type="primary">Paste</el-button>
-				<el-button @click="videoLoadIn" type="primary" :loading="loading">Load In</el-button>
-			</div>
-		</div>
-		<div class="body">
-			<video class="video" ref="video" :src="videoUrl" width="100%" controls></video>
-			<div v-show="selectionVisible" @mousedown="selectionDown" ref="selection" class="crop-selection"></div>
-			<div v-if="maskVisible" @mousedown="maskDown" ref="mask" class="mask-tracker"></div>
-		</div>
-		<div class="footer">
-			<div ref="frameBar" class="frame-bar footer-left">
-				<div @mousedown="dragLeftDown" ref="leftBar" class="flag-left">
-					<div v-if="startTime" class="time">{{ calcucateTime(startTime) }}</div>
-					<div class="flag-dot flag-dot-left"></div>
+		<el-container>
+			<el-aside width="200px">
+				<el-scrollbar style="height: 593px">
+					<el-row style="padding-right: 10px">
+						<el-col v-for="video in videos" :key="video.id">
+							<a @click="loadin(video)" style="cursor: pointer">
+								<el-image style="width: 100%" :src="video.image" fit="fit"></el-image>
+								<h1 style="font-size: 12px">{{ video.title }}</h1>
+							</a>
+						</el-col>
+					</el-row>
+				</el-scrollbar>
+			</el-aside>
+			<el-main>
+				<!--		<img src="./static/images/logo.png" height="100" style="user-select: none; -webkit-app-region: drag;" />-->
+				<div class="header">
+					<div class="header-left">
+						<el-input placeholder="video keywords" v-model="searchTxt" />
+					</div>
+					<div class="header-right">
+						<!--				<el-button @click="getUrl" type="primary">Paste</el-button>-->
+						<el-button @click="search" type="primary" :loading="loading">Search</el-button>
+					</div>
 				</div>
-				<div @mousedown="dragRightDown" ref="rightBar" class="flag-right">
-					<div v-if="endTime != duration" class="time">{{ calcucateTime(endTime) }}</div>
-					<div class="flag-dot flag-dot-right"></div>
+				<div class="body">
+					<video class="video" ref="video" :src="videoUrl" width="100%" controls></video>
+					<div
+						v-show="selectionVisible"
+						@mousedown="selectionDown"
+						ref="selection"
+						class="crop-selection"
+					></div>
+					<div v-if="maskVisible" @mousedown="maskDown" ref="mask" class="mask-tracker"></div>
 				</div>
-			</div>
-			<div class="footer-right">
-				<!-- <el-button size="medium" @click="crop">crop</el-button> -->
-				<el-button
-					:class="[{ on: audio }, 'audio']"
-					:disabled="!audioChange"
-					size="medium"
-					@click="audio = !audio"
-					>Only Audio</el-button
-				>
-				<el-button type="primary" @click="down" size="medium" :disabled="download.bar >= 0">{{
-					download.name
-				}}</el-button>
-			</div>
-		</div>
-		<div style="margin-top: 50px;">Version: {{ version }}</div>
-		<div class="Model">
-			<div v-if="visible">
-				<div class="model-mask"></div>
-				<div class="model-wrap">
-					<div class="model">
-						<div class="model-content">
-							<div class="model-header">
-								<div class="model-title">select video loading format</div>
-							</div>
-							<div class="model-body">
-								<select v-model="format.index">
-									<option v-for="video in format.videos" :key="video.index" :value="video.index">{{
-										`${video.type}-${video.resolution}-${video.quality}`
-									}}</option>
-								</select>
-							</div>
-							<div class="model-footer">
-								<div class="btn-area">
-									<el-button @click="handleCancel" size="medium">Cancel</el-button>
-									<el-button @click="handleConfirm" type="primary" size="medium">Confirm</el-button>
+				<div class="footer">
+					<div ref="frameBar" class="frame-bar footer-left">
+						<div @mousedown="dragLeftDown" ref="leftBar" class="flag-left">
+							<div v-if="startTime" class="time">{{ calcucateTime(startTime) }}</div>
+							<div class="flag-dot flag-dot-left"></div>
+						</div>
+						<div @mousedown="dragRightDown" ref="rightBar" class="flag-right">
+							<div v-if="endTime != duration" class="time">{{ calcucateTime(endTime) }}</div>
+							<div class="flag-dot flag-dot-right"></div>
+						</div>
+					</div>
+					<div class="footer-right">
+						<!-- <el-button size="medium" @click="crop">crop</el-button> -->
+						<el-button
+							:class="[{ on: audio }, 'audio']"
+							:disabled="!audioChange"
+							size="medium"
+							@click="audio = !audio"
+							>Only Audio
+						</el-button>
+						<el-button type="primary" @click="down" size="medium" :disabled="download.bar >= 0"
+							>{{ download.name }}
+						</el-button>
+					</div>
+				</div>
+				<div style="margin-top: 50px;">Version: {{ version }}</div>
+				<div class="Model">
+					<div v-if="visible">
+						<div class="model-mask"></div>
+						<div class="model-wrap">
+							<div class="model">
+								<div class="model-content">
+									<div class="model-header">
+										<div class="model-title">select video loading format</div>
+									</div>
+									<div class="model-body">
+										<select v-model="format.index">
+											<option
+												v-for="video in format.videos"
+												:key="video.index"
+												:value="video.index"
+												>{{ `${video.type}-${video.resolution}-${video.quality}` }}
+											</option>
+										</select>
+									</div>
+									<div class="model-footer">
+										<div class="btn-area">
+											<el-button @click="handleCancel" size="medium">Cancel</el-button>
+											<el-button @click="handleConfirm" type="primary" size="medium"
+												>Confirm
+											</el-button>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-		</div>
+			</el-main>
+		</el-container>
 	</div>
 </template>
 
@@ -81,10 +107,14 @@ import { isNumber } from "util";
 
 const clipboard = require("electron").clipboard;
 
+const { execFileSync, fork } = require("child_process");
+
 export default {
 	name: "app",
 	data() {
 		return {
+			searchTxt: "",
+			videos: [],
 			inputVideoUrl: "",
 			loading: false,
 			videoLoading: false,
@@ -134,8 +164,24 @@ export default {
 		getUrl() {
 			this.inputVideoUrl = clipboard.readText();
 		},
-		videoLoadIn() {
+		search() {
 			this.loading = true;
+			let ytdl = fork(path.join(process.cwd(), "ytdl/index.js"));
+			console.log(this.searchTxt);
+			ytdl.send(this.searchTxt);
+			ytdl.on("message", data => {
+				this.videos = data;
+				console.log(this.videos);
+				this.loading = false;
+				ytdl.kill();
+			});
+		},
+		loadin(video) {
+			this.inputVideoUrl = video.url;
+			this.videoLoadIn();
+		},
+		videoLoadIn() {
+			this.videoLoading = true;
 			// this.videoUrl = this.inputVideoUrl;
 			console.log(this.inputVideoUrl);
 			this.$load(this.inputVideoUrl)
@@ -143,15 +189,18 @@ export default {
 					console.log(info);
 					this.format.title = info.title;
 					this.format.videos = info.formats;
+					this.format.index = 0;
 					this.visible = true;
 					for (let i = 0; i < this.format.videos.length; i++) {
 						this.format.videos[i].index = i;
 					}
-					this.loading = false;
+					this.videoLoading = false;
+					this.format.index = 1;
+					this.handleConfirm();
 					// this.videoUrl = this.format.videos[this.format.index].url;
 				})
 				.catch(err => {
-					this.loading = false;
+					this.videoLoading = false;
 					this.$message.error(err.message);
 					console.log(err);
 				});
@@ -451,13 +500,17 @@ export default {
 </script>
 
 <style>
+.el-scrollbar__wrap {
+	overflow-x: hidden;
+}
+
 #app {
 	font-family: "Avenir", Helvetica, Arial, sans-serif;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	text-align: center;
 	color: #2c3e50;
-	width: 800px;
+	width: 1040px;
 	margin: 0 auto;
 }
 

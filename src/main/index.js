@@ -17,7 +17,7 @@ function createWindow() {
 	/**
 	 * Initial window options
 	 */
-	let width = process.env.NODE_ENV === "development" ? 1220 : 920;
+	let width = process.env.NODE_ENV === "development" ? 1040 : 1040;
 	let height = 700;
 
 	if (process.platform === "darwin") {
