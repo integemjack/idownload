@@ -171,7 +171,8 @@ export default {
 			console.log(this.searchTxt);
 			let r = ytdl.send(this.searchTxt);
 			console.log(r);
-			ytdl.on("message", data => {
+			ytdl.on("message", (err, data) => {
+				if (err) this.$message.error(err);
 				this.videos = data;
 				console.log(this.videos);
 				this.loading = false;
