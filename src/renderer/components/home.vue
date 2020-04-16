@@ -1,7 +1,7 @@
 <template>
 	<div id="app" v-loading="videoLoading">
 		<el-container>
-			<el-aside width="200px">
+			<el-aside width="200px" style="overflow-x: hidden;">
 				<el-scrollbar style="height: 593px">
 					<el-row style="padding-right: 10px">
 						<el-col v-for="video in videos" :key="video.id">
@@ -59,7 +59,7 @@
 						</el-button>
 					</div>
 				</div>
-				<div style="margin-top: 50px;">Version: {{ version }}</div>
+
 				<div class="Model">
 					<div v-if="visible">
 						<div class="model-mask"></div>
@@ -501,7 +501,7 @@ export default {
 
 <style>
 .el-scrollbar__wrap {
-	overflow-x: hidden;
+	overflow-x: hidden !important;
 }
 
 #app {

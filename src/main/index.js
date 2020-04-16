@@ -1,3 +1,6 @@
+const fs = require("fs");
+const path = require("path");
+
 import { app, BrowserWindow, powerSaveBlocker, ipcMain, Menu, MenuItem } from "electron";
 
 /**
@@ -19,46 +22,69 @@ function createWindow() {
 	 */
 	let width = process.env.NODE_ENV === "development" ? 1200 : 1200;
 	let height = 750;
+	let _package_file = path.join(process.cwd(), "package.json");
+	if (!fs.existsSync(_package_file)) _package_file = path.join(__dirname, "../../package.json");
+	let _package = JSON.parse(fs.readFileSync(_package_file));
 
-	if (process.platform === "darwin") {
-		const template = [
-			{
-				label: "Application",
-				submenu: [
-					{
-						label: "Quit",
-						accelerator: "Command+Q",
-						click: function() {
-							app.quit();
-						}
+	// if (process.platform === "darwin") {
+	const template = [
+		{
+			label: "Application",
+			submenu: [
+				{
+					label: "Quit",
+					accelerator: "Command+Q",
+					click: function() {
+						app.quit();
 					}
-				]
-			},
-			{
-				label: "Edit",
-				submenu: [
-					{
-						label: "Copy",
-						accelerator: "CmdOrCtrl+C",
-						selector: "copy:"
-					},
-					{
-						label: "Paste",
-						accelerator: "CmdOrCtrl+V",
-						selector: "paste:"
-					},
-					{
-						label: "Cut",
-						accelerator: "CmdOrCtrl+X",
-						selector: "cut:"
+				}
+			]
+		},
+		{
+			label: "Edit",
+			submenu: [
+				{
+					label: "Copy",
+					accelerator: "CmdOrCtrl+C",
+					selector: "copy:"
+				},
+				{
+					label: "Paste",
+					accelerator: "CmdOrCtrl+V",
+					selector: "paste:"
+				},
+				{
+					label: "Cut",
+					accelerator: "CmdOrCtrl+X",
+					selector: "cut:"
+				}
+			]
+		},
+		{
+			label: "Debug",
+			submenu: [
+				{
+					label: "Debug",
+					accelerator: "F12",
+					click: function() {
+						mainWindow.webContents.openDevTools();
 					}
-				]
-			}
-		];
-		Menu.setApplicationMenu(Menu.buildFromTemplate(template));
-	} else {
-		Menu.setApplicationMenu(null);
-	}
+				}
+			]
+		},
+		{
+			label: `About`,
+			submenu: [
+				{
+					label: `Version: ${_package.version}`
+				}
+			]
+		}
+	];
+	Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+	// } else {
+	// 	Menu.setApplicationMenu(null);
+	// }
 
 	mainWindow = new BrowserWindow({
 		title: "iDownloader",
