@@ -1,6 +1,6 @@
 {
 	"name": "idownloader",
-	"version": "1.0.145",
+	"version": "1.0.146",
 	"author": "Jack Wang <jack.wang@integem.com>",
 	"description": "youtube download tool",
 	"license": "MIT",
@@ -22,7 +22,7 @@
 		"pack:renderer": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.renderer.config.js",
 		"test": "npm run unit && npm run e2e",
 		"unit": "karma start test/unit/karma.conf.js",
-		"postinstall": "",
+		"postinstall": "cd ytdl && npm i",
 		"pkg": "node ./.electron-vue/dir.js && pkg . -t node10 --out-dir ./command/",
 		"command": "node ./getLink/index.js https://www.youtube.com/watch?v=DyDfgMOUjCI"
 	},
