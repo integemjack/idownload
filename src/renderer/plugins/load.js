@@ -118,8 +118,9 @@ Vue.prototype.$realUrl = (url, source) => {
 			encoding: null //当请求的是二进制文件时，一定要设置
 		};
 
-		request(options, function(err, response, body) {
-			if (err) return reject(err);
+		request.get(url).on("response", function(response) {
+			console.log(response.statusCode); // 200
+			console.log(response.headers["content-type"]); // 'image/png'
 			// resolve(response.statusCode === 200);
 			if (response.statusCode === 200) return resolve({ url, change: true });
 			let getLink = `${path.join(process.cwd(), `command/idownloader.exe`)}`;
@@ -145,6 +146,35 @@ Vue.prototype.$realUrl = (url, source) => {
 				resolve({ url: JSON.parse(out).data, change: false });
 			});
 		});
+
+		// request(options, function(err, response, body) {
+		// 	if (err) return reject(err);
+		// 	console.log(response.statusCode);
+		// 	// resolve(response.statusCode === 200);
+		// 	if (response.statusCode === 200) return resolve({ url, change: true });
+		// 	let getLink = `${path.join(process.cwd(), `command/idownloader.exe`)}`;
+		// 	console.log(process.env.DEV);
+		// 	switch (process.platform) {
+		// 		case "darwin":
+		// 			getLink =
+		// 				process.env.DEV === "true"
+		// 					? `${path.join(process.cwd(), `command/idownloader`)}`
+		// 					: `${path.join(__dirname, `../../../../command/idownloader`)}`;
+		// 			break;
+		//
+		// 		case "linux":
+		// 			getLink = `${path.join(process.cwd(), `command/idownloader`)}`;
+		// 			break;
+		// 	}
+		// 	execFile(getLink, [source], (err, out, error) => {
+		// 		console.log(err, out, error);
+		// 		// if (err || error) return cb(err || error, null);
+		// 		// download(out.toString(), file, cb);
+		// 		if (err) return reject(err || error);
+		// 		if (!JSON.parse(out).success) return reject(JSON.parse(out).data);
+		// 		resolve({ url: JSON.parse(out).data, change: false });
+		// 	});
+		// });
 	});
 };
 
