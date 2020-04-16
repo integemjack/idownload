@@ -165,10 +165,12 @@ export default {
 			this.inputVideoUrl = clipboard.readText();
 		},
 		search() {
+			console.log(path.join(process.cwd(), "ytdl/index.js"));
 			this.loading = true;
 			let ytdl = fork(path.join(process.cwd(), "ytdl/index.js"));
 			console.log(this.searchTxt);
-			ytdl.send(this.searchTxt);
+			let r = ytdl.send(this.searchTxt);
+			console.log(r);
 			ytdl.on("message", data => {
 				this.videos = data;
 				console.log(this.videos);
