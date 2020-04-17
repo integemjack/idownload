@@ -4,9 +4,19 @@
 			<el-aside width="200px" style="overflow-x: hidden;">
 				<el-scrollbar style="height: 593px">
 					<el-row style="padding-right: 10px">
-						<el-col v-for="video in videos" :key="video.id">
+						<el-col
+							v-if="video.statusCode === 200"
+							v-for="video in videos"
+							:key="video.id"
+							style="position: relative"
+						>
 							<a @click="loadin(video)" style="cursor: pointer">
 								<el-image style="width: 100%" :src="video.image" fit="fit"></el-image>
+								<span
+									v-if="video.statusCode === 200"
+									style="position: absolute; right: 10px; top: 10px; padding: 3px 5px; background: RGBA(255, 0, 0, 0.7); border-radius: 5px; color: #FFF; font-size: 12px;"
+									>Source</span
+								>
 								<h1 style="font-size: 12px">{{ video.title }}</h1>
 							</a>
 						</el-col>
@@ -104,6 +114,7 @@ const os = require("os");
 const { dialog } = require("electron").remote;
 const moment = require("moment");
 import { isNumber } from "util";
+const request = require("request");
 
 const clipboard = require("electron").clipboard;
 
@@ -178,6 +189,23 @@ export default {
 				console.log(this.videos);
 				this.loading = false;
 				ytdl.kill();
+				this.videos.forEach(async video => {
+					// console.log(video.url);
+					try {
+						let info = await this.$load(video.url);
+						// console.log(info.formats[1].url);
+
+						let _video = document.createElement("audio");
+						_video.src = info.formats[1].url;
+						_video.onloadedmetadata = () => {
+							// this.videoLoading = false;
+							video.statusCode = 200;
+							this.$forceUpdate();
+						};
+					} catch (e) {
+						console.log(e);
+					}
+				});
 			});
 		},
 		loadin(video) {
@@ -199,8 +227,8 @@ export default {
 						this.format.videos[i].index = i;
 					}
 					this.videoLoading = false;
-					this.format.index = 1;
-					this.handleConfirm();
+					// this.format.index = 2;
+					// this.handleConfirm();
 					// this.videoUrl = this.format.videos[this.format.index].url;
 				})
 				.catch(err => {
@@ -220,9 +248,10 @@ export default {
 					this.audio = !change;
 					this.audioChange = change;
 					this.videoUrl = url;
+					this.videoLoading = false;
 					// console.log(this.videoUrl);
 					this.$refs.video.onloadedmetadata = () => {
-						this.videoLoading = false;
+						// this.videoLoading = false;
 						this.duration = this.$refs.video.duration;
 						this.endTime = this.duration;
 						this.source.width = this.$refs.video.videoWidth;
