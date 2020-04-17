@@ -12,11 +12,11 @@
 						>
 							<a @click="loadin(video)" style="cursor: pointer">
 								<el-image style="width: 100%" :src="video.image" fit="fit"></el-image>
-								<span
-									v-if="video.statusCode === 200"
-									style="position: absolute; right: 10px; top: 10px; padding: 3px 5px; background: RGBA(255, 0, 0, 0.7); border-radius: 5px; color: #FFF; font-size: 12px;"
-									>Source</span
-								>
+								<!--								<span-->
+								<!--									v-if="video.statusCode === 200"-->
+								<!--									style="position: absolute; right: 10px; top: 10px; padding: 3px 5px; background: RGBA(255, 0, 0, 0.7); border-radius: 5px; color: #FFF; font-size: 12px;"-->
+								<!--									>Source</span-->
+								<!--								>-->
 								<h1 style="font-size: 12px">{{ video.title }}</h1>
 							</a>
 						</el-col>
@@ -85,9 +85,12 @@
 												v-for="video in format.videos"
 												:key="video.index"
 												:value="video.index"
-												>{{ `${video.type}-${video.resolution}-${video.quality}` }}
+												>{{ `${video.mimeType}` }}
 											</option>
 										</select>
+										<br />
+										<el-button @click="setVideo">Video</el-button>
+										<el-button @click="setAudio">Music</el-button>
 									</div>
 									<div class="model-footer">
 										<div class="btn-area">
@@ -187,7 +190,6 @@ export default {
 				if (data.err) this.$message.error(data.err);
 				this.videos = data.videos;
 				console.log(this.videos);
-				this.loading = false;
 				ytdl.kill();
 				this.videos.forEach(async video => {
 					// console.log(video.url);
@@ -201,6 +203,7 @@ export default {
 							// this.videoLoading = false;
 							video.statusCode = 200;
 							this.$forceUpdate();
+							this.loading = false;
 						};
 					} catch (e) {
 						console.log(e);
@@ -211,6 +214,12 @@ export default {
 		loadin(video) {
 			this.inputVideoUrl = video.url;
 			this.videoLoadIn();
+		},
+		setAudio() {
+			this.format.index = this.format.videos.filter(video => /^audio/.test(video.mimeType))[0].index;
+		},
+		setVideo() {
+			this.format.index = this.format.videos.filter(video => /^video/.test(video.mimeType))[0].index;
 		},
 		videoLoadIn() {
 			this.videoLoading = true;
