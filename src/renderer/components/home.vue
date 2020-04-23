@@ -295,7 +295,7 @@ export default {
 			let project = fs.readFileSync(this.project, "utf-8");
 			console.log(project);
 
-			video.path = path.join(path.join(project), "instruction/music", `${moment().valueOf()}.wav`);
+			video.path = path.join(path.join(project), "instruction/music", `a${moment().valueOf()}.wav`);
 			this.$down(video, (err, bar) => {
 				console.log(err, bar);
 				if (err) {
