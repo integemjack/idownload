@@ -187,7 +187,14 @@ export default {
 			console.log(r);
 			ytdl.on("message", data => {
 				console.log(data);
-				if (data.err) this.$message.error(data.err);
+				if (data.err) {
+					this.loading = false;
+					return this.$message.error(data.err.code);
+				}
+				if (data.videos.length === 0) {
+					this.loading = false;
+					return this.$message.info(`No data!`);
+				}
 				this.videos = data.videos;
 				console.log(this.videos);
 				ytdl.kill();
