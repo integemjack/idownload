@@ -179,9 +179,13 @@ export default {
 			this.inputVideoUrl = clipboard.readText();
 		},
 		search() {
-			console.log(path.join(process.cwd(), "ytdl/index.js"));
+			let ytdlPath =
+				process.platform === "darwin"
+					? path.join(__dirname, "../../../../ytdl/index.js")
+					: path.join(process.cwd(), "ytdl/index.js");
+			console.log(ytdlPath);
 			this.loading = true;
-			let ytdl = fork(path.join(process.cwd(), "ytdl/index.js"));
+			let ytdl = fork(ytdlPath);
 			console.log(this.searchTxt);
 			let r = ytdl.send(this.searchTxt);
 			console.log(r);
