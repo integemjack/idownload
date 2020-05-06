@@ -179,10 +179,10 @@ export default {
 			this.inputVideoUrl = clipboard.readText();
 		},
 		search() {
-			let ytdlPath =
-				process.platform === "darwin"
-					? path.join(__dirname, "../../../../ytdl/index.js")
-					: path.join(process.cwd(), "ytdl/index.js");
+			let ytdlPath = path.join(process.cwd(), "ytdl/index.js");
+			if (!fs.existsSync(ytdlPath)) {
+				ytdlPath = path.join(__dirname, "../../../../ytdl/index.js");
+			}
 			console.log(ytdlPath);
 			this.loading = true;
 			let ytdl = fork(ytdlPath);
